@@ -1,4 +1,4 @@
-```javascript
+
 const analyzeButton = document.getElementById("analyzeButton");
 
 const loading = document.getElementById("loading");
@@ -97,4 +97,4 @@ analyzeButton.addEventListener("click", async () => {
         loading.classList.add("hidden");
     }
 });
-```
+
