@@ -1,9 +1,8 @@
-```python
+
 import json
 import os
 
 from http.server import BaseHTTPRequestHandler
-
 from google import genai
 
 
@@ -13,11 +12,11 @@ class handler(BaseHTTPRequestHandler):
         try:
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length)
-
             data = json.loads(body.decode("utf-8"))
 
             product_name = data.get("productName", "").strip()
             category = data.get("category", "").strip()
+
             sugar = data.get("sugar", "")
             sodium = data.get("sodium", "")
             protein = data.get("protein", "")
@@ -46,7 +45,8 @@ class handler(BaseHTTPRequestHandler):
 당신은 식품 영양성분표를 쉽게 설명해주는 AI 영양 정보 도우미입니다.
 
 의료적 진단이나 치료를 하지 말고,
-일반적인 영양 정보와 식품 선택에 도움이 되는 내용을 쉽고 친절하게 설명해주세요.
+일반적인 영양 정보와 식품 선택에 도움이 되는 내용을
+쉽고 친절하게 설명해주세요.
 
 다음 식품의 영양성분을 분석해주세요.
 
@@ -79,7 +79,8 @@ class handler(BaseHTTPRequestHandler):
 
 마지막에는 다음 문구를 반드시 포함해주세요.
 
-※ 본 결과는 일반적인 영양 정보 제공을 위한 참고용이며 의료적 진단을 대신하지 않습니다.
+※ 본 결과는 일반적인 영양 정보 제공을 위한 참고용이며
+의료적 진단이나 치료를 대신하지 않습니다.
 """
 
             response = client.models.generate_content(
@@ -122,11 +123,20 @@ class handler(BaseHTTPRequestHandler):
         ).encode("utf-8")
 
         self.send_response(status_code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(response)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header(
+            "Content-Type",
+            "application/json; charset=utf-8"
+        )
+        self.send_header(
+            "Content-Length",
+            str(len(response))
+        )
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
         self.end_headers()
 
         self.wfile.write(response)
-```
+
 
