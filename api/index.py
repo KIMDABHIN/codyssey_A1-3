@@ -1,12 +1,55 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from google import genai
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 app = FastAPI()
 
+
+# -----------------------------
+# 정적 파일
+# -----------------------------
+
+app.mount(
+    "/css",
+    StaticFiles(directory=str(PROJECT_ROOT / "css")),
+    name="css"
+)
+
+app.mount(
+    "/js",
+    StaticFiles(directory=str(PROJECT_ROOT / "js")),
+    name="js"
+)
+
+app.mount(
+    "/images",
+    StaticFiles(directory=str(PROJECT_ROOT / "images")),
+    name="images"
+)
+
+
+# -----------------------------
+# 홈페이지
+# -----------------------------
+
+@app.get("/")
+def homepage():
+    return FileResponse(
+        str(PROJECT_ROOT / "index.html")
+    )
+
+
+# -----------------------------
+# AI 분석 데이터
+# -----------------------------
 
 class NutritionData(BaseModel):
     productName: str
@@ -14,13 +57,24 @@ class NutritionData(BaseModel):
     nutrition: dict
 
 
-@app.get("/api")
-def home():
-    return {"message": "한눈영양 API가 정상적으로 작동합니다."}
+# -----------------------------
+# API 테스트
+# -----------------------------
 
+@app.get("/api")
+def api_home():
+    return {
+        "message": "한눈영양 API가 정상적으로 작동합니다."
+    }
+
+
+# -----------------------------
+# AI 영양 분석
+# -----------------------------
 
 @app.post("/api")
 def analyze_nutrition(data: NutritionData):
+
     try:
         api_key = os.environ.get("GEMINI_API_KEY")
 
@@ -45,7 +99,9 @@ def analyze_nutrition(data: NutritionData):
         fat = nutrition.get("fat", "")
         saturated_fat = nutrition.get("saturatedFat", "")
 
-        client = genai.Client(api_key=api_key)
+        client = genai.Client(
+            api_key=api_key
+        )
 
         prompt = f"""
 당신은 식품 영양성분표를 쉽게 설명해주는 AI 영양 정보 도우미입니다.
@@ -77,7 +133,7 @@ def analyze_nutrition(data: NutritionData):
 4. 대체 식품
 - 비교해볼 만한 식품 2~3가지를 제안
 
-어려운 전문용어는 최대한 피하고
+어려운 전문용어는 최대한 피하고,
 사용자가 실제 식품을 고를 때 이해하기 쉬운 표현을 사용해주세요.
 
 ※ 본 결과는 일반적인 영양 정보 제공을 위한 참고용이며
@@ -94,8 +150,12 @@ def analyze_nutrition(data: NutritionData):
         }
 
     except Exception as e:
-        print("API ERROR:", repr(e))
+
+        print(
+            "API ERROR:",
+            repr(e)
+        )
 
         return {
-            "error": f"{type(e).__name__}: {str(e)}"
+            "error": f"{type(e).__name__}: {e}"
         }
