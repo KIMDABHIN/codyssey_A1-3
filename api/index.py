@@ -154,16 +154,15 @@ class handler(BaseHTTPRequestHandler):
                 }
             )
 
-        except Exception as e:
-            print("API ERROR:", str(e))
+       except Exception as e:
+    print("API ERROR:", repr(e))
 
-            self.send_json(
-                500,
-                {
-                    "error": "AI 분석 중 오류가 발생했습니다."
-                }
-            )
-
+    self.send_json(
+        500,
+        {
+            "error": f"AI 분석 오류: {type(e).__name__}: {e}"
+        }
+    )
     def send_json(self, status_code, data):
         response = json.dumps(
             data,
