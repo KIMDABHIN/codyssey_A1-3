@@ -30,9 +30,15 @@ app.mount(
 )
 
 app.mount(
-    "/images",
-    StaticFiles(directory=str(PROJECT_ROOT / "images")),
-    name="images"
+    "/css",
+    StaticFiles(directory=str(PROJECT_ROOT / "css")),
+    name="css"
+)
+
+app.mount(
+    "/js",
+    StaticFiles(directory=str(PROJECT_ROOT / "js")),
+    name="js"
 )
 
 
