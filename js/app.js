@@ -70,6 +70,7 @@ analyzeButton.addEventListener("click", async () => {
 
 
         const data = await response.json();
+        console.log("AI 응답:", data);
 
 
         if (!response.ok) {
