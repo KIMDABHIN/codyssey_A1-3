@@ -6,5 +6,3 @@ dependencies = [
     "google-genai"
 ]
 
-[tool.vercel]
-entrypoint = "api.analyze:handler"
